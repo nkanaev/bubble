@@ -14,6 +14,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.io.File;
+import java.util.Arrays;
+import java.net.URLEncoder;
+import java.net.URLConnection;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.pm.ApplicationInfo.FLAG_LARGE_HEAP;
@@ -22,6 +25,10 @@ import static android.os.Build.VERSION_CODES.HONEYCOMB;
 
 
 public final class Utils {
+    public static final String[] IMAGE_MIMES = new String[] {"image/webp","image/jpeg","image/bmp","image/gif","image/png"};
+    public static final String[] ZIP_MIMES = new String[] {"application/zip"};
+    public static final String[] RAR_MIMES = new String[] {"application/rar"};
+
     public static int getScreenDpWidth(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(displayMetrics.widthPixels / displayMetrics.density);
@@ -73,15 +80,15 @@ public final class Utils {
     }
 
     public static boolean isImage(String filename) {
-        return filename.toLowerCase().matches(".*\\.(jpg|jpeg|bmp|gif|png)$");
+        return Arrays.asList(IMAGE_MIMES).contains(URLConnection.guessContentTypeFromName(URLEncoder.encode(filename)));
     }
 
     public static boolean isZip(String filename) {
-        return filename.toLowerCase().matches(".*\\.(zip|cbz)$");
+        return Arrays.asList(ZIP_MIMES).contains(URLConnection.guessContentTypeFromName(URLEncoder.encode(filename)));
     }
 
     public static boolean isRar(String filename) {
-        return filename.toLowerCase().matches(".*\\.(rar|cbr)$");
+        return Arrays.asList(RAR_MIMES).contains(URLConnection.guessContentTypeFromName(URLEncoder.encode(filename)));
     }
 
     public static boolean isArchive(String filename) {
