@@ -49,4 +49,7 @@
 
     <string name="library_empty">Your collection seems empty. Click \"folder\" icon to select library directory</string>
     <string name="warning_missing_file">Missing file. Please update the library</string>
+    <string name="compact_list">Compact List</string>
+    <string name="large_list">Large List</string>
+    <string name="directory_item_count">%1$d items</string>
 </resources>
