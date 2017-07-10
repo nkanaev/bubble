@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bubble</string>
+    <string name="app_description">Cititor de benzi desenate pentru Android</string>
+
+    <string name="action_refresh">Reactualizează</string>
+    <string name="action_settings">Setări</string>
+
+    <string name="action_view_mode">Modul de vizualizare</string>
+    <string name="action_view_mode_aspect_fill">Aspect umplere</string>
+    <string name="action_view_mode_aspect_fit">Aspect potrivire</string>
+    <string name="action_view_mode_fit_width">Potrivește pe lățime</string>
+
+    <string name="action_reading_mode">Modul de citire</string>
+    <string name="action_reading_mode_left_to_right">Benzi desenate</string>
+    <string name="action_reading_mode_right_to_left">Manga</string>
+
+    <string name="menu_browser_filter">Filtrează</string>
+    <string name="menu_browser_filter_all">Toate</string>
+    <string name="menu_browser_filter_read">Citește</string>
+    <string name="menu_browser_filter_reading">În curs de citire</string>
+    <string name="menu_browser_filter_unread">Necitite</string>
+    <string name="menu_browser_filter_unfinished">Neterminate</string>
+
+    <string name="drawer_open">Deschide meniul de navigare</string>
+    <string name="drawer_close">Închide meniul de navigare</string>
+
+    <string name="menu_library">Bibliotecă</string>
+    <string name="menu_browser">Navigator</string>
+    <string name="menu_about">Despre</string>
+
+    <string name="library_header_recent">Recente</string>
+    <string name="library_header_all">Toate</string>
+
+    <string name="directory_picker_header">Setează directorul bibliotecii</string>
+    <string name="directory_picker_confirm">Selectează</string>
+    <string name="directory_picker_cancel">Anulează</string>
+
+    <string name="search">Caută</string>
+
+    <string name="browser_search_hint">Vă rugăm introduceți un termen de căutare</string>
+
+    <string name="reload">Reîncarcă</string>
+
+    <string name="switch_action_positive">Da</string>
+    <string name="switch_action_negative">Nu</string>
+    <string name="switch_next_comic">Doriți să treceți la următoarele benzi desenate?</string>
+    <string name="switch_prev_comic">Doriți să treceți la benzile desenate anterioare?</string>
+
+    <string name="library_empty">Colecția dvs. pare goalã. Apăsați pictograma \"folder\" pentru a selecta directorul bibliotecii</string>
+    <string name="warning_missing_file">Lipsește fișierul. Vă rugăm actualizați biblioteca</string>
+</resources>
