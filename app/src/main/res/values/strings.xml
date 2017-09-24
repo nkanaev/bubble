@@ -49,4 +49,6 @@
 
     <string name="library_empty">Your collection seems empty. Click \"folder\" icon to select library directory</string>
     <string name="warning_missing_file">Missing file. Please update the library</string>
+
+    <string name="is_read_checkbox">Is comic read checkbox</string>
 </resources>

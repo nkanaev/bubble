@@ -49,4 +49,6 @@
 
     <string name="library_empty">Su colección parece vacía. Haz clic en el icono \"carpeta\" para seleccionar el directorio de la Biblioteca</string>
     <string name="warning_missing_file">Faltan archivos. Por favor, actualice la Biblioteca</string>
+
+    <string name="is_read_checkbox">Es una casilla de verificación de lectura cómica</string> <!-- Google Translate -->
 </resources>

@@ -12,9 +12,10 @@ import java.util.List;
 public class DirectoryListingManager {
     private final List<Comic> mComics;
     private final List<String> mDirectoryDisplays;
+    private final List<Boolean> mIsRead;
     private final File mLibraryDir;
 
-    public DirectoryListingManager(List<Comic> comics, String libraryDir) {
+    public DirectoryListingManager(List<Comic> comics, List<Boolean> areAllRead, String libraryDir) {
         Collections.sort(comics, new Comparator<Comic>() {
             @Override
             public int compare(Comic lhs, Comic rhs) {
@@ -24,6 +25,7 @@ public class DirectoryListingManager {
             }
         });
         mComics = comics;
+        mIsRead = new ArrayList<>(areAllRead);
         mLibraryDir = new File(libraryDir != null ? libraryDir : "/");
 
         List<String> directoryDisplays = new ArrayList<>();
@@ -58,6 +60,10 @@ public class DirectoryListingManager {
 
     public String getDirectoryDisplayAtIndex(int idx) {
         return mDirectoryDisplays.get(idx);
+    }
+
+    public Boolean getReadStatusAtIndex(int idx) {
+        return mIsRead.get(idx);
     }
 
     public Comic getComicAtIndex(int idx) {

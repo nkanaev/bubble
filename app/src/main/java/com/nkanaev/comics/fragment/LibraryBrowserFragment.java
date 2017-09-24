@@ -21,6 +21,7 @@ import com.nkanaev.comics.managers.LocalCoverHandler;
 import com.nkanaev.comics.managers.Utils;
 import com.nkanaev.comics.model.Comic;
 import com.nkanaev.comics.model.Storage;
+import com.nkanaev.comics.view.IsReadImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -190,14 +191,14 @@ public class LibraryBrowserFragment extends Fragment
             if (mFilterSearch.length() > 0 && !c.getFile().getName().contains(mFilterSearch))
                 continue;
             if (mFilterRead != R.id.menu_browser_filter_all) {
-                if (mFilterRead == R.id.menu_browser_filter_read && c.getCurrentPage() != c.getTotalPages())
+                if (mFilterRead == R.id.menu_browser_filter_read && !c.isRead())
                     continue;
-                if (mFilterRead == R.id.menu_browser_filter_unread && c.getCurrentPage() != 0)
+                if (mFilterRead == R.id.menu_browser_filter_unread && c.isStarted())
                     continue;
-                if (mFilterRead == R.id.menu_browser_filter_unfinished && c.getCurrentPage() == c.getTotalPages())
+                if (mFilterRead == R.id.menu_browser_filter_unfinished && c.isRead())
                     continue;
                 if (mFilterRead == R.id.menu_browser_filter_reading &&
-                        (c.getCurrentPage() == 0 || c.getCurrentPage() == c.getTotalPages()))
+                        (!c.isStarted() || c.isRead()))
                     continue;
             }
             mAllItems.add(c);
@@ -363,20 +364,25 @@ public class LibraryBrowserFragment extends Fragment
         private ImageView mCoverView;
         private TextView mTitleTextView;
         private TextView mPagesTextView;
+        private IsReadImageView mIsReadImageView;
 
         public ComicViewHolder(View itemView) {
             super(itemView);
             mCoverView = (ImageView) itemView.findViewById(R.id.comicImageView);
             mTitleTextView = (TextView) itemView.findViewById(R.id.comicTitleTextView);
             mPagesTextView = (TextView) itemView.findViewById(R.id.comicPagerTextView);
+            mIsReadImageView = (IsReadImageView) itemView.findViewById(R.id.comicIsReadImageView);
 
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
+            mIsReadImageView.setClickable(true);
+            mIsReadImageView.setOnClickListener(this);
         }
 
         public void setupComic(Comic comic) {
             mTitleTextView.setText(comic.getFile().getName());
             mPagesTextView.setText(Integer.toString(comic.getCurrentPage()) + '/' + Integer.toString(comic.getTotalPages()));
+            mIsReadImageView.setIsRead(comic.isRead());
 
             mPicasso.load(LocalCoverHandler.getComicCoverUri(comic))
                     .into(mCoverView);
@@ -386,7 +392,17 @@ public class LibraryBrowserFragment extends Fragment
         public void onClick(View v) {
             int i = getAdapterPosition();
             Comic comic = getComicAtPosition(i);
-            openComic(comic);
+
+            if (v instanceof IsReadImageView) {
+                toggleReadStatus(comic);
+            } else {
+                openComic(comic);
+            }
+        }
+
+        private void toggleReadStatus(Comic comic) {
+            comic.setCurrentPage(comic.isRead() ? 0 : comic.getTotalPages());
+            mComicListView.getAdapter().notifyDataSetChanged();
         }
     }
 }
