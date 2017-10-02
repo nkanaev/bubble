@@ -16,14 +16,6 @@ public class DirectoryListingManager {
     private final File mLibraryDir;
 
     public DirectoryListingManager(List<Comic> comics, List<Boolean> areAllRead, String libraryDir) {
-        Collections.sort(comics, new Comparator<Comic>() {
-            @Override
-            public int compare(Comic lhs, Comic rhs) {
-                String leftPath = lhs.getFile().getParentFile().getAbsolutePath();
-                String rightPath = rhs.getFile().getParentFile().getAbsolutePath();
-                return leftPath.compareTo(rightPath);
-            }
-        });
         mComics = comics;
         mIsRead = new ArrayList<>(areAllRead);
         mLibraryDir = new File(libraryDir != null ? libraryDir : "/");
