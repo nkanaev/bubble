@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bubble</string>
+    <string name="app_description">Android-striplezer</string>
+
+    <string name="action_refresh">Verversen</string>
+    <string name="action_settings">Instellingen</string>
+
+    <string name="action_view_mode">Weergavemodus</string>
+    <string name="action_view_mode_aspect_fill">Volledig opvullen</string>
+    <string name="action_view_mode_aspect_fit">Passend maken</string>
+    <string name="action_view_mode_fit_width">Breedte opvullen</string>
+
+    <string name="action_reading_mode">Leesmodus</string>
+    <string name="action_reading_mode_left_to_right">Strips</string>
+    <string name="action_reading_mode_right_to_left">Manga</string>
+
+    <string name="menu_browser_filter">Filter</string>
+    <string name="menu_browser_filter_all">Alles</string>
+    <string name="menu_browser_filter_read">Gelezen</string>
+    <string name="menu_browser_filter_reading">Momenteel aan het lezen</string>
+    <string name="menu_browser_filter_unread">Ongelezen</string>
+    <string name="menu_browser_filter_unfinished">Niet-afgerond</string>
+
+    <string name="drawer_open">Navigatiemenu openen</string>
+    <string name="drawer_close">Navigatiemenu sluiten</string>
+
+    <string name="menu_library">Bibliotheek</string>
+    <string name="menu_browser">Verkenner</string>
+    <string name="menu_about">Over</string>
+
+    <string name="library_header_recent">Recent</string>
+    <string name="library_header_all">Alles</string>
+
+    <string name="directory_picker_header">Stel een bibliotheekmap in</string>
+    <string name="directory_picker_confirm">Selecteren</string>
+    <string name="directory_picker_cancel">Annuleren</string>
+
+    <string name="search">Zoeken</string>
+
+    <string name="browser_search_hint">Voer een zoekopdracht in</string>
+
+    <string name="reload">Herladen</string>
+
+    <string name="switch_action_positive">Ja</string>
+    <string name="switch_action_negative">Nee</string>
+    <string name="switch_next_comic">Wil je overschakelen naar de volgende strip?</string>
+    <string name="switch_prev_comic">Wil je overschakelen naar de vorige strip?</string>
+
+    <string name="library_empty">Je verzameling is leeg. Druk op het \"map\"-pictogram om een bibliotheekmap te selecteren.</string>
+    <string name="warning_missing_file">Ontbrekend bestand; werk de bibliotheek bij.</string>
+</resources>
