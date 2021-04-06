@@ -1,7 +1,5 @@
 # bubble
 
-> NOTE: the project is unmaintained.
-
 ![promo](art/promo.jpg)
 
 Android comic book reader.
