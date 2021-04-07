@@ -36,4 +36,5 @@
     <string name="menu_browser_filter_unread">Ungelesen</string>
     <string name="menu_library">Bibliothek</string>
     <string name="reload">Neu laden</string>
+    <string name="is_read_checkbox">Ist komisch lesen checkbox</string> <!-- Google Translate -->
 </resources>

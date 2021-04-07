@@ -49,4 +49,6 @@
 
     <string name="library_empty">Colecția dvs. pare goalã. Apăsați pictograma \"folder\" pentru a selecta directorul bibliotecii</string>
     <string name="warning_missing_file">Lipsește fișierul. Vă rugăm actualizați biblioteca</string>
+
+    <string name="is_read_checkbox">Este bifată căsuța de citire comic</string> <!-- Google Translate -->
 </resources>

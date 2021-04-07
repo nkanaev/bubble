@@ -20,10 +20,12 @@ import com.nkanaev.comics.managers.Utils;
 import com.nkanaev.comics.model.Comic;
 import com.nkanaev.comics.model.Storage;
 import com.nkanaev.comics.view.DirectorySelectDialog;
+import com.nkanaev.comics.view.IsReadImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -61,9 +63,8 @@ public class LibraryFragment extends Fragment
     public void onResume() {
         super.onResume();
         Scanner.getInstance().addUpdateHandler(mUpdateHandler);
-        if (Scanner.getInstance().isRunning()) {
-            setLoading(true);
-        }
+        Scanner.getInstance().scanLibrary();
+        setLoading(true);
     }
 
     @Override
@@ -156,7 +157,26 @@ public class LibraryFragment extends Fragment
 
     private void getComics() {
         List<Comic> comics = Storage.getStorage(getActivity()).listDirectoryComics();
-        mComicsListManager = new DirectoryListingManager(comics, getLibraryDir());
+        final List<Boolean> directoryReadStatus = getComicDirectoryReadStatus(comics);
+        mComicsListManager = new DirectoryListingManager(comics, directoryReadStatus, getLibraryDir());
+    }
+
+    private List<Boolean> getComicDirectoryReadStatus(final List<Comic> topLevelComics) {
+        final List<Boolean> isRead = new ArrayList<>();
+        for (final Comic comic : topLevelComics) {
+            isRead.add(areAllComicsInDirRead(comic.getFile().getParentFile()));
+        }
+        return isRead;
+    }
+
+    private boolean areAllComicsInDirRead(final File comicDir) {
+        final List<Comic> comics = Storage.getStorage(getActivity()).listComics(comicDir.getPath());
+        boolean areAllComicsRead = true;
+
+        for (final Comic comic : comics) {
+            areAllComicsRead = areAllComicsRead & comic.isRead();
+        }
+        return areAllComicsRead;
     }
 
     private void refreshLibraryDelayed() {
@@ -222,7 +242,7 @@ public class LibraryFragment extends Fragment
         }
     }
 
-    private final class GroupBrowserAdapter extends BaseAdapter {
+    private final class GroupBrowserAdapter extends BaseAdapter implements View.OnClickListener {
         @Override
         public int getCount() {
             return mComicsListManager.getCount();
@@ -242,6 +262,7 @@ public class LibraryFragment extends Fragment
         public View getView(int position, View convertView, ViewGroup parent) {
             Comic comic = mComicsListManager.getComicAtIndex(position);
             String dirDisplay = mComicsListManager.getDirectoryDisplayAtIndex(position);
+            Boolean isAllRead = mComicsListManager.getReadStatusAtIndex(position);
 
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.card_group, parent, false);
@@ -255,7 +276,25 @@ public class LibraryFragment extends Fragment
             TextView tv = (TextView) convertView.findViewById(R.id.comic_group_folder);
             tv.setText(dirDisplay);
 
+            IsReadImageView groupIsReadImageView = (IsReadImageView) convertView.findViewById(R.id.comic_group_isRead);
+            groupIsReadImageView.setIsRead(isAllRead);
+            groupIsReadImageView.setClickable(true);
+            groupIsReadImageView.setOnClickListener(this);
+
             return convertView;
+        }
+
+        @Override
+        public void onClick(View view) {
+            final int position = mGridView.getPositionForView(view);
+            final boolean isRead = mComicsListManager.getReadStatusAtIndex(position);
+            final String directory = mComicsListManager.getDirectoryAtIndex(position);
+            final List<Comic> comics = Storage.getStorage(getActivity()).listComics(directory);
+
+            for (Comic comic : comics) {
+                comic.setCurrentPage(isRead ? 0 : comic.getTotalPages());
+            }
+            mUpdateHandler.sendEmptyMessage(Constants.MESSAGE_MEDIA_UPDATED);
         }
     }
 }

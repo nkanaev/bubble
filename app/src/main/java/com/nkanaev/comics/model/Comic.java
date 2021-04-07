@@ -44,6 +44,14 @@ public class Comic implements Comparable {
         mCurrentPage = page;
     }
 
+    public boolean isRead() {
+        return mCurrentPage == mNumPages;
+    }
+
+    public boolean isStarted() {
+        return mCurrentPage != 0;
+    }
+
     public String getType() {
         return mType;
     }
@@ -55,5 +63,22 @@ public class Comic implements Comparable {
     @Override
     public boolean equals(Object o) {
         return (o instanceof Comic) && getId() == ((Comic)o).getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return mId;
+    }
+
+    @Override
+    public String toString() {
+        return "Comic{" +
+                "mCurrentPage=" + mCurrentPage +
+                ", mNumPages=" + mNumPages +
+                ", mId=" + mId +
+                ", mType='" + mType + '\'' +
+                ", mFile=" + mFile +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

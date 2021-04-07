@@ -68,7 +68,7 @@ public class Storage {
     private ComicDbHelper mDbHelper;
     private static Storage mSharedInstance;
 
-    private static final String SORT_ORDER = "lower(" + Book.COLUMN_NAME_FILEPATH + "|| '/' || " + Book.COLUMN_NAME_FILENAME + ") ASC";
+    private static final String SORT_ORDER = "lower(" + Book.COLUMN_NAME_FILEPATH + ") ASC";
 
     private Storage(Context context) {
         mDbHelper = new ComicDbHelper(context);
