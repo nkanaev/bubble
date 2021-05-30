@@ -7,6 +7,10 @@
           app:showAsAction="always"
           android:actionViewClass="android.support.v7.widget.SearchView"
           app:actionViewClass="android.support.v7.widget.SearchView"/>
+    <item android:id="@+id/menuChangeLayoutView"
+        android:title="@string/compact_list"
+        android:icon="@drawable/ic_view_large_list_white_24dp"
+        app:showAsAction="ifRoom"/>
     <item android:id="@+id/menuReaderAspectRatio"
           android:title="@string/menu_browser_filter"
           android:icon="@drawable/ic_filter_list_white_24dp"

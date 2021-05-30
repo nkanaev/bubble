@@ -2,9 +2,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menuChangeLayoutView"
+        android:title="@string/compact_list"
+        android:icon="@drawable/ic_view_large_list_white_24dp"
+        app:showAsAction="always"/>
     <item android:id="@+id/menuLibrarySetDir"
           android:title="@string/action_view_mode"
           android:icon="@drawable/ic_folder_white_24dp"
-          app:showAsAction="always">
-    </item>
+          app:showAsAction="always"/>
 </menu>

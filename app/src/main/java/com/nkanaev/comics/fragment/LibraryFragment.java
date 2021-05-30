@@ -6,21 +6,22 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.*;
-import android.widget.*;
+
 import com.nkanaev.comics.Constants;
 import com.nkanaev.comics.MainApplication;
 import com.nkanaev.comics.R;
 import com.nkanaev.comics.activity.MainActivity;
 import com.nkanaev.comics.managers.DirectoryListingManager;
-import com.nkanaev.comics.managers.LocalCoverHandler;
 import com.nkanaev.comics.managers.Scanner;
 import com.nkanaev.comics.managers.Utils;
 import com.nkanaev.comics.model.Comic;
 import com.nkanaev.comics.model.Storage;
 import com.nkanaev.comics.view.DirectorySelectDialog;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -30,7 +31,7 @@ import java.util.List;
 public class LibraryFragment extends Fragment
         implements
         DirectorySelectDialog.OnDirectorySelectListener,
-        AdapterView.OnItemClickListener,
+        LibraryBrowserAdapter.LibraryItemClickListener,
         SwipeRefreshLayout.OnRefreshListener {
     private final static String BUNDLE_DIRECTORY_DIALOG_SHOWN = "BUNDLE_DIRECTORY_DIALOG_SHOWN";
 
@@ -38,8 +39,8 @@ public class LibraryFragment extends Fragment
     private DirectorySelectDialog mDirectorySelectDialog;
     private SwipeRefreshLayout mRefreshLayout;
     private View mEmptyView;
-    private GridView mGridView;
-    private Picasso mPicasso;
+    private RecyclerView recyclerView;
+    private LibraryBrowserAdapter libraryBrowserAdapter;
     private boolean mIsRefreshPlanned = false;
     private Handler mUpdateHandler = new UpdateHandler(this);
 
@@ -76,28 +77,43 @@ public class LibraryFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_library, container, false);
 
-        mPicasso = ((MainActivity) getActivity()).getPicasso();
-
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragmentLibraryLayout);
-        mRefreshLayout.setColorSchemeColors(R.color.primary);
+        mRefreshLayout.setColorSchemeColors(getActivity().getResources().getColor(R.color.primary));
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setEnabled(true);
-
-        mGridView = (GridView) view.findViewById(R.id.groupGridView);
-        mGridView.setAdapter(new GroupBrowserAdapter());
-        mGridView.setOnItemClickListener(this);
-
-        mEmptyView = view.findViewById(R.id.library_empty);
 
         int deviceWidth = Utils.getDeviceWidth(getActivity());
         int columnWidth = getActivity().getResources().getInteger(R.integer.grid_group_column_width);
         int numColumns = Math.round((float) deviceWidth / columnWidth);
-        mGridView.setNumColumns(numColumns);
+
+        libraryBrowserAdapter = new LibraryBrowserAdapter(((MainActivity) getActivity()).getPicasso());
+        libraryBrowserAdapter.setOnItemClickListener(this);
+        libraryBrowserAdapter.setCompact(MainApplication.getPreferences().getBoolean(Constants.SETTINGS_LIBRARY_COMPACT_LIST, false));
+        recyclerView = (RecyclerView) view.findViewById(R.id.groupRecyclerView);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), numColumns);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(libraryBrowserAdapter);
+        swapData();
+
+        mEmptyView = view.findViewById(R.id.library_empty);
 
         showEmptyMessage(mComicsListManager.getCount() == 0);
         getActivity().setTitle(R.string.menu_library);
 
         return view;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem menuItem = menu.findItem(R.id.menuChangeLayoutView);
+        if(libraryBrowserAdapter.isCompactList()) {
+            menuItem.setTitle(getString(R.string.large_list));
+            menuItem.setIcon(R.drawable.ic_view_large_list_white_24dp);
+        } else {
+            menuItem.setTitle(getString(R.string.compact_list));
+            menuItem.setIcon(R.drawable.ic_view_compact_list_white_24dp);
+        }
     }
 
     @Override
@@ -109,13 +125,24 @@ public class LibraryFragment extends Fragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menuLibrarySetDir) {
-            if (Scanner.getInstance().isRunning()) {
-                Scanner.getInstance().stop();
+        switch (item.getItemId()) {
+            case R.id.menuLibrarySetDir: {
+                if (Scanner.getInstance().isRunning()) {
+                    Scanner.getInstance().stop();
+                }
+                mDirectorySelectDialog.show();
+                return true;
             }
-
-            mDirectorySelectDialog.show();
-            return true;
+            case R.id.menuChangeLayoutView: {
+                SharedPreferences preferences = MainApplication.getPreferences();
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(Constants.SETTINGS_LIBRARY_COMPACT_LIST, !preferences.getBoolean(Constants.SETTINGS_LIBRARY_COMPACT_LIST, false));
+                editor.commit();
+                libraryBrowserAdapter.setCompact(preferences.getBoolean(Constants.SETTINGS_LIBRARY_COMPACT_LIST, false));
+                swapData();
+                getActivity().invalidateOptionsMenu();
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -140,7 +167,7 @@ public class LibraryFragment extends Fragment
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onLibraryItemClick(int position) {
         String path = mComicsListManager.getDirectoryAtIndex(position);
         LibraryBrowserFragment fragment = LibraryBrowserFragment.create(path);
         ((MainActivity)getActivity()).pushFragment(fragment);
@@ -165,24 +192,24 @@ public class LibraryFragment extends Fragment
                 @Override
                 public void run() {
                     getComics();
-                    ((BaseAdapter)mGridView.getAdapter()).notifyDataSetChanged();
+                    swapData();
                     mIsRefreshPlanned = false;
                 }
             };
             mIsRefreshPlanned = true;
-            mGridView.postDelayed(updateRunnable, 100);
+            recyclerView.postDelayed(updateRunnable, 100);
         }
     }
 
     private void setLoading(boolean isLoading) {
         if (isLoading) {
             mRefreshLayout.setRefreshing(true);
-            mGridView.setOnItemClickListener(null);
+            libraryBrowserAdapter.setOnItemClickListener(null);
         }
         else {
             mRefreshLayout.setRefreshing(false);
             showEmptyMessage(mComicsListManager.getCount() == 0);
-            mGridView.setOnItemClickListener(this);
+            libraryBrowserAdapter.setOnItemClickListener(this);
         }
     }
 
@@ -216,46 +243,13 @@ public class LibraryFragment extends Fragment
             }
             else if (msg.what == Constants.MESSAGE_MEDIA_UPDATE_FINISHED) {
                 fragment.getComics();
-                ((BaseAdapter)fragment.mGridView.getAdapter()).notifyDataSetChanged();
+                fragment.swapData();
                 fragment.setLoading(false);
             }
         }
     }
 
-    private final class GroupBrowserAdapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return mComicsListManager.getCount();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mComicsListManager.getComicAtIndex(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            Comic comic = mComicsListManager.getComicAtIndex(position);
-            String dirDisplay = mComicsListManager.getDirectoryDisplayAtIndex(position);
-
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.card_group, parent, false);
-            }
-
-            ImageView groupImageView = (ImageView)convertView.findViewById(R.id.card_group_imageview);
-
-            mPicasso.load(LocalCoverHandler.getComicCoverUri(comic))
-                    .into(groupImageView);
-
-            TextView tv = (TextView) convertView.findViewById(R.id.comic_group_folder);
-            tv.setText(dirDisplay);
-
-            return convertView;
-        }
+    public void swapData(){
+        libraryBrowserAdapter.swapData(mComicsListManager);
     }
 }
